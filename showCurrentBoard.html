@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	 <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css">
+
+  <!-- Compiled and minified JavaScript -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
+          
+    <title>Read File (via User Input selection)</title>
+    <script type="text/javascript">
+    var reader; //GLOBAL File Reader object for demo purpose only
+    var i=0;
+    var array=[];
+    var squaresPositon=[];
+    var temp=[];
+    var ids=["A16", "B16", "C16", "D16", "E16", "F16", "G16", "H16", "I16", "J16", "K16", "L16", "A15", "B15", "C15", "D15", "E15", "F15", "G15", "H15", "I15", "J15", "K15", "L15", "A14", "B14", "C14", "D14", "E14", "F14", "G14", "H14", "I14", "J14", "K14", "L14", "A13", "B13", "C13", "D13", "E13", "F13", "G13", "H13", "I13", "J13", "K13", "L13", "A12", "B12", "C12", "D12", "E12", "F12", "G12", "H12", "I12", "J12", "K12", "L12", "A11", "B11", "C11", "D11", "E11", "F11", "G11", "H11", "I11", "J11", "K11", "L11", "A10", "B10", "C10", "D10", "E10", "F10", "G10", "H10", "I10", "J10", "K10", "L10", "A09", "B09", "C09", "D09", "E09", "F09", "G09", "H09", "I09", "J09", "K09", "L09", "A08", "B08", "C08", "D08", "E08", "F08", "G08", "H08", "I08", "J08", "K08", "L08", "A07", "B07", "C07", "D07", "E07", "F07", "G07", "H07", "I07", "J07", "K07", "L07", "A06", "B06", "C06", "D06", "E06", "F06", "G06", "H06", "I06", "J06", "K06", "L06", "A05", "B05", "C05", "D05", "E05", "F05", "G05", "H05", "I05", "J05", "K05", "L05", "A04", "B04", "C04", "D04", "E04", "F04", "G04", "H04", "I04", "J04", "K04", "L04", "A03", "B03", "C03", "D03", "E03", "F03", "G03", "H03", "I03", "J03", "K03", "L03", "A02", "B02", "C02", "D02", "E02", "F02", "G02", "H02", "I02", "J02", "K02", "L02", "A01", "B01", "C01", "D01", "E01", "F01", "G01", "H01", "I01", "J01", "K01", "L01"];
+    /**
+     * Check for the various File API support.
+     */
+    function checkFileAPI() {
+        if (window.File && window.FileReader && window.FileList && window.Blob) {
+            reader = new FileReader();
+            return true; 
+        } else {
+            alert('The File APIs are not fully supported by your browser. Fallback required.');
+            return false;
+        }
+    }
+
+    /**
+     * read text input
+     */
+    function readText(filePath) {
+        console.log(filePath);
+        var output = ""; //placeholder for text output
+        if(filePath.files && filePath.files[0]) {           
+            reader.onload = function (e) {
+                output = e.target.result;
+                displayContents(output);
+            };//end onload()
+            reader.readAsText(filePath.files[0]);
+        }//end if html5 filelist support
+        else if(ActiveXObject && filePath) { //fallback to IE 6-8 support via ActiveX
+            try {
+                reader = new ActiveXObject("Scripting.FileSystemObject");
+                var file = reader.OpenTextFile(filePath, 1); //ActiveX File Object
+                output = file.ReadAll(); //text contents of file
+                file.Close(); //close file "input stream"
+                //displayContents(output);
+            } catch (e) {
+                if (e.number == -2146827859) {
+                    alert('Unable to access local files due to browser security settings. ' + 
+                     'To overcome this, go to Tools->Internet Options->Security->Custom Level. ' + 
+                     'Find the setting for "Initialize and script ActiveX controls not marked as safe" and change it to "Enable" or "Prompt"'); 
+                }
+            }       
+        }
+        else { //this is where you could fallback to Java Applet, Flash or similar
+            return false;
+        }       
+        return true;
+    }   
+
+
+    function displayContents(txt) {
+        var el = document.getElementById('main'); 
+        
+        el.innerHTML=txt;
+        for(var x=0; x<txt.length; x++){
+            var temp="";
+
+            while(txt[x]!=" " || x>=txt.length){
+                temp+=txt[x];
+                x++;
+            }
+
+            squaresPositon.push(temp);
+            console.log(squaresPositon.length);
+            console.log(temp);
+            
+            if (temp.charAt(3)!="U"){
+                var k="";
+                k=k+temp.charAt(0)+temp.charAt(1)+temp.charAt(2)
+                if (temp.charAt(3)=="W" && temp.charAt(4)=="M") addimg(k, 0);
+                else if (temp.charAt(3)=="W" && temp.charAt(4)=="K") addimg(k, 1);
+                else if (temp.charAt(3)=="B" && temp.charAt(4)=="M") addimg(k, 2);
+                else if (temp.charAt(3)=="B" && temp.charAt(4)=="K") addimg(k, 3);
+                console.log(k);   
+            }
+       }
+    }
+
+    function addimg(id, type){
+        console.log(type);
+        var elem = document.createElement("img");
+        srcArray=["images/wm.jpg","images/wk.jpg","images/bm.png","images/bk.png"];
+
+        if (type==0) src=srcArray[0];
+        else if (type==1) src=srcArray[1];
+        else if (type==2) src=srcArray[2];
+        else if (type==3) src=srcArray[3];
+
+        elem.setAttribute("src", src);
+        elem.setAttribute("height", "20px;");
+        elem.setAttribute("width", "20px;");
+
+        var elm=document.getElementById(id);
+        //elm.innerHTML=id.toString()+type.toString();
+        elm.appendChild(elem);
+    }
+
+	function textProcess(textFile){
+        alert("Hi");
+        for(var x=0; x<textFile.length; x++){
+            var temp="";
+            while(textFile[x]!=" "){
+                temp+=textFile[x];
+                x++;
+            }
+            squaresPositon.push(temp);
+            console.log(temp);
+       }
+   }	
+	function createRow(id){
+		for(var y=0; y<12; y++){
+	    	var square=document.createElement('div');
+	    	square.setAttribute("style","height:30px;width:30px;background:green;margin-top:5px;margin-bottom:5px;margin-left:10px;margin-right:10px;;float:left;"); 
+	    	square.id=ids[i];
+            square.className="square";
+            i++;
+            // console.log (i);
+            array.push(square);
+	    	document.getElementById(id).appendChild(square);
+		}		
+	}
+
+
+    function createRow1(id){
+        for(var y=0; y<5; y++){
+            var square=document.createElement('div');
+            square.setAttribute("style","height:30px;width:30px;background:white;margin-top:5px;margin-bottom:5px;margin-left:10px;margin-right:10px;;float:left;"); 
+            square.id=ids[i];
+            square.className="square";
+            i++;
+            // console.log (i);
+            array.push(square);
+            document.getElementById(id).appendChild(square);
+        }  
+         for(var y=0; y<2; y++){
+            var square=document.createElement('div');
+            square.setAttribute("style","height:30px;width:30px;background:green;margin-top:5px;margin-bottom:5px;margin-left:10px;margin-right:10px;;float:left;"); 
+            square.id=ids[i];
+            square.className="square";
+            i++;
+            // console.log (i);
+            array.push(square);
+            document.getElementById(id).appendChild(square);
+        }  
+        for(var y=0; y<5; y++){
+            var square=document.createElement('div');
+            square.setAttribute("style","height:30px;width:30px;background:white;margin-top:5px;margin-bottom:5px;margin-left:10px;margin-right:10px;;float:left;"); 
+            square.id=ids[i];
+            square.className="square";
+            i++;
+            // console.log (i);
+            array.push(square);
+            document.getElementById(id).appendChild(square);
+        } 
+    }
+
+    function createRow2(id){
+        for(var y=0; y<2; y++){
+            var square=document.createElement('div');
+            square.setAttribute("style","height:30px;width:30px;background:white;margin-top:5px;margin-bottom:5px;margin-left:10px;margin-right:10px;;float:left;"); 
+            square.id=ids[i];
+            square.className="square";
+            i++;
+            // console.log (i);
+            array.push(square);
+            document.getElementById(id).appendChild(square);
+        }  
+         for(var y=0; y<8; y++){
+            var square=document.createElement('div');
+            square.setAttribute("style","height:30px;width:30px;background:green;margin-top:5px;margin-bottom:5px;margin-left:10px;margin-right:10px;;float:left;"); 
+            square.id=ids[i];
+            square.className="square";
+            i++;
+            // console.log (i);
+            array.push(square);
+            document.getElementById(id).appendChild(square);
+        }  
+        for(var y=0; y<2; y++){
+            var square=document.createElement('div');
+            square.setAttribute("style","height:30px;width:30px;background:white;margin-top:5px;margin-bottom:5px;margin-left:10px;margin-right:10px;;float:left;"); 
+            square.id=ids[i];
+            square.className="square";
+            i++;
+            // console.log (i);
+            array.push(square);
+            document.getElementById(id).appendChild(square);
+        } 
+    }
+    function createRow3(id){
+        for(var y=0; y<1; y++){
+            var square=document.createElement('div');
+            square.setAttribute("style","height:30px;width:30px;background:white;margin-top:5px;margin-bottom:5px;margin-left:10px;margin-right:10px;;float:left;"); 
+            square.id=ids[i];
+            square.className="square";
+            i++;
+            // console.log (i);
+            array.push(square);
+            document.getElementById(id).appendChild(square);
+        }  
+         for(var y=0; y<10; y++){
+            var square=document.createElement('div');
+            square.setAttribute("style","height:30px;width:30px;background:green;margin-top:5px;margin-bottom:5px;margin-left:10px;margin-right:10px;;float:left;"); 
+            square.id=ids[i];
+            square.className="square";
+            i++;
+            // console.log (i);
+            array.push(square);
+            document.getElementById(id).appendChild(square);
+        }  
+        for(var y=0; y<1; y++){
+            var square=document.createElement('div');
+            square.setAttribute("style","height:30px;width:30px;background:white;margin-top:5px;margin-bottom:5px;margin-left:10px;margin-right:10px;;float:left;"); 
+            square.id=ids[i];
+            square.className="square";
+            i++;
+            // console.log (i);
+            document.getElementById(id).appendChild(square);
+            
+        } 
+    }
+
+   //Manipulating the text here on.
+
+   
+
+</script>
+</head>
+
+<body onload="checkFileAPI();">
+
+        <input type="file" onchange='readText(this)' />
+        <br/>
+        <hr/>   
+        <h3>Contents of the Text file:</h3>
+        <h4 id="player"></h4>
+        <div id="main">
+            ...
+        </div>
+ 
+        <div class="row" id="col16"><script type="text/javascript">createRow1("col16")</script></div>	
+        <div class="row" id="col15"><script type="text/javascript">createRow2("col15")</script></div>
+        <div class="row" id="col14"><script type="text/javascript">createRow3("col14")</script></div>
+        <div class="row" id="col13"><script type="text/javascript">createRow("col13")</script></div>
+        <div class="row" id="col12"><script type="text/javascript">createRow("col12")</script></div>
+        <div class="row" id="col11"><script type="text/javascript">createRow("col11")</script></div>
+        <div class="row" id="col10"><script type="text/javascript">createRow("col10")</script></div>
+        <div class="row" id="col9"><script type="text/javascript">createRow("col9")</script></div>
+        <div class="row" id="col8"><script type="text/javascript">createRow("col8")</script></div>
+        <div class="row" id="col7"><script type="text/javascript">createRow("col7")</script></div>
+        <div class="row" id="col6"><script type="text/javascript">createRow("col6")</script></div>
+        <div class="row" id="col5"><script type="text/javascript">createRow("col5")</script></div>
+        <div class="row" id="col4"><script type="text/javascript">createRow("col4")</script></div>
+        <div class="row" id="col3"><script type="text/javascript">createRow3("col3")</script></div>
+        <div class="row" id="col2"><script type="text/javascript">createRow2("col2")</script></div>
+        <div class="row" id="col1"><script type="text/javascript">createRow1("col1")</script></div>
+        <script type="text/javascript"> 
+        // document.getElementById("60").setAttribute("style","background-color:orange;");
+        var divs = document.getElementsByClassName("square");
+        for(var i = 0; i < divs.length; i++){
+           //do something to each div like
+           //divs[i].innerHTML = ids[i];
+        }
+
+        </script>
+</body>
+</html>
+
+        
